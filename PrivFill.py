@@ -48,13 +48,9 @@ class PrivFill():
             self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint).to("cuda")
 
     def privatize(self, text):
-        #sentences = nltk.sent_tokenize("This is a temporary first sentence. "+text)
         sentences = nltk.sent_tokenize(text)
         replace = []
-        for i, s in enumerate(sentences):
-            # if i == 0:
-            #     temp = "[blank] " + text
-            # else:
+        for s in sentences:
             temp = text.replace(s, "[blank]")
             inputs = [temp]
             inputs = self.tokenizer(inputs, max_length=self.max_input_length, truncation=True, return_tensors="pt").input_ids.to("cuda")
