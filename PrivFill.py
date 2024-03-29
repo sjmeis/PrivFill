@@ -1,22 +1,11 @@
 import pandas as pd
-import random
 import nltk
-import re
 import numpy as np
 from tqdm.auto import tqdm
 
-import string
 import torch
 from transformers import AutoTokenizer
-from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, BitsAndBytesConfig
-from peft import LoraConfig, get_peft_model, PeftModel
-
-bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_use_double_quant=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.bfloat16
-)
+from transformers import AutoModelForSeq2SeqLM
 
 class PrivFill():
     base_model = None
@@ -37,15 +26,8 @@ class PrivFill():
         self.max_new_tokens = max_new_tokens
         self.max_input_length =  max_input_length
 
-        if base_model is not None:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.base_model, add_bos_token=True, trust_remote_code=True)
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-
-            self.base_model = AutoModelForCausalLM.from_pretrained(base_model, quantization_config=bnb_config)
-            self.model = PeftModel.from_pretrained(base_model, model_checkpoint)
-        else:
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint).to("cuda")
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint).to("cuda")
 
     def privatize(self, text):
         sentences = nltk.sent_tokenize(text)
