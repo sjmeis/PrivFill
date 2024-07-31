@@ -1,6 +1,6 @@
 # PrivFill
 
-Anonymous repository containing software for the COLM 2024 submission: *No Noise Needed: Language Model Sentence Infilling as an Alternative to Differentially Private Text Rewriting*
+Anonymous repository containing software for the COLING 2025 ARR submission: *No Noise Needed: Language Model Sentence Infilling as an Alternative to Differentially Private Text Rewriting*
 
 ## Basic Usage ## 
 `X = PrivFill.PrivFill(model_checkpoint="/path/to/infilling_model")`
