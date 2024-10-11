@@ -1,9 +1,9 @@
 # PrivFill
 
-Anonymous repository containing software for the COLING 2025 ARR submission: *No Noise Needed: Language Model Sentence Infilling as an Alternative to Differentially Private Text Rewriting*
+Anonymous repository containing software for the NAACL 2025 ARR submission: *On the Impact of Noise in Differentially Private Text Rewriting*
 
 ## Basic Usage ## 
-`X = PrivFill.PrivFill(model_checkpoint="/path/to/infilling_model")`
+`X = PrivFill.PrivFill(model_checkpoint="/path/to/infilling_model")` OR `X = PrivFill.PrivFillDP(model_checkpoint="/path/to/infilling_model")`
 
 `X.privatize(text)`
 
