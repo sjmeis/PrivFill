@@ -4,17 +4,26 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, AutoModelForCausa
 from transformers import BartTokenizer, BartModel, BartForConditionalGeneration
 from transformers.models.bart.modeling_bart import BartDecoder
 import torch
-import torch.nn.functional as nnf
+from torch.utils.data import Dataset
 import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
-from pathlib import Path
 
 import mpmath
 from mpmath import mp
 
 import nltk
 nltk.download('punkt', quiet=True)
+
+class ListDataset(Dataset):
+    def __init__(self, original_list):
+        self.original_list = original_list
+
+    def __len__(self):
+        return len(self.original_list)
+
+    def __getitem__(self, i):
+        return self.original_list[i]
 
 class ClipLogitsProcessor(LogitsProcessor):
   def __init__(self, min=-100, max=100):
@@ -36,10 +45,11 @@ class DPPrompt():
     model = None
     device = None
 
-    def __init__(self, model_checkpoint="google/flan-t5-large", min_logit=-95, max_logit=8):
+    def __init__(self, model_checkpoint="google/flan-t5-large", min_logit=-95, max_logit=8, batch_size=16):
         self.model_checkpoint = model_checkpoint
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.batch_size = batch_size
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint).to(self.device)
@@ -49,6 +59,8 @@ class DPPrompt():
         self.sensitivity = abs(self.max_logit - self.min_logit)
         self.logits_processor = LogitsProcessorList([ClipLogitsProcessor(self.min_logit, self.max_logit)])
 
+        self.pipe = pipeline("text2text-generation", model=self.model, tokenizer=self.tokenizer, device=self.device, truncation=True)
+        self.pipe.tokenizer.pad_token_id = self.model.config.eos_token_id
 
     def prompt_template_fn(self, doc):
         prompt = "Document : {}\nParaphrase of the document :".format(doc)
@@ -71,6 +83,14 @@ class DPPrompt():
 
         private_text = self.tokenizer.decode(output[0], skip_special_tokens = True )
         return private_text
+    
+    def privatize_dp(self, texts, epsilon=100, max_new_tokens=32):
+        temperature = 2 * self.sensitivity / epsilon
+        prompts = ListDataset(texts)
+        private_texts = []
+        for r in self.pipe(prompts, do_sample=True, top_k=0, top_p=1.0, temperature=temperature, logits_processor=self.logits_processor, max_new_tokens=max_new_tokens, batch_size=self.batch_size):
+            private_texts.append(r[0]["generated_text"])
+        return private_texts
     
 class DPBart():
     model = None
@@ -181,7 +201,7 @@ class DPBart():
             Z = torch.from_numpy(np.random.normal(0, analytic_scale, size=k))
         return vector + Z
 
-    def privatize(self, text, epsilon=100, method="gaussian"):
+    def privatize(self, text, epsilon=100, method="analytic_gaussian"):
         inputs = self.tokenizer(text, max_length=512, truncation=True, return_tensors="pt").to(self.device)
         num_tokens = len(inputs["input_ids"][0])
 
@@ -191,3 +211,15 @@ class DPBart():
         dec_out = self.decoder.generate(encoder_outputs=enc_output, max_new_tokens=num_tokens)
         private_text = self.tokenizer.decode(dec_out[0], skip_special_tokens=True)
         return private_text.strip()
+    
+    def privatize_batch(self, texts, epsilon=100, method="analytic_gaussian"):
+        inputs = self.tokenizer(texts, max_length=512, truncation=True, padding=True, return_tensors="pt").to(self.device)
+        num_tokens = [len(x) for x in inputs["input_ids"]]
+
+        enc_output = self.model.encoder(**inputs)
+        for i, x in enumerate(enc_output["last_hidden_state"].cpu()):
+            enc_output["last_hidden_state"][i]= self.noise(self.clip(x), epsilon=epsilon, delta=self.delta, method=method).float().to(self.device)
+
+        dec_out = self.decoder.generate(encoder_outputs=enc_output, max_new_tokens=max(num_tokens))
+        private_text = [self.tokenizer.decode(x, skip_special_tokens=True).strip() for x in dec_out]
+        return " ".join(private_text)

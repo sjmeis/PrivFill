@@ -7,6 +7,8 @@ import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForSeq2SeqLM
 
+import LLMDP
+
 class PrivFill():
     base_model = None
     model_checkpoint = None
@@ -43,3 +45,67 @@ class PrivFill():
             else:
                 replace.append(nltk.sent_tokenize(decoded_output.strip())[0])
         return " ".join(replace)
+    
+class PrivFillDPBart():
+    base_model = None
+    model_checkpoint = None
+    max_new_tokens = None
+    max_input_length = None
+    model = None
+    tokenizer = None
+    device = None
+
+    def __init__(self, model_checkpoint, max_new_tokens=32, max_input_length=512):
+        if torch.cuda.is_available() == True:
+            self.device = "cuda"
+        else:
+            self.device = "cpu"
+
+        self.model_checkpoint = model_checkpoint
+        self.max_new_tokens = max_new_tokens
+        self.max_input_length =  max_input_length
+
+        self.model = LLMDP.DPBart(model=model_checkpoint)
+
+    def privatize(self, text, epsilon):
+        sentences = nltk.sent_tokenize(text)
+        eps = epsilon / len(sentences)
+        inputs = []
+        for s in sentences:
+            temp = text.replace(s, "[blank]")
+            inputs.append(temp)
+        
+        output = self.model.privatize_batch(inputs, epsilon=eps)
+
+        return output
+    
+class PrivFillDP():
+    base_model = None
+    model_checkpoint = None
+    max_new_tokens = None
+    max_input_length = None
+    model = None
+    tokenizer = None
+    device = None
+
+    def __init__(self, model_checkpoint, max_new_tokens=32, max_input_length=512):
+        if torch.cuda.is_available() == True:
+            self.device = "cuda"
+        else:
+            self.device = "cpu"
+
+        self.model_checkpoint = model_checkpoint
+        self.max_new_tokens = max_new_tokens
+        self.max_input_length =  max_input_length
+
+        self.model = LLMDP.DPPrompt(model_checkpoint=model_checkpoint)
+
+    def privatize(self, text, epsilon):
+        sentences = nltk.sent_tokenize(text)
+        inputs = []
+        for s in sentences:
+            temp = text.replace(s, "[blank]")
+            inputs.append(temp)
+
+        output = self.model.privatize_dp(inputs, epsilon)
+        return " ".join(output)
