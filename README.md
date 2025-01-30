@@ -11,7 +11,7 @@ Repository containing software for the NAACL 2025 paper: *On the Impact of Noise
 We make our three sentence infilling models public. They can be found at this [link](https://drive.google.com/drive/folders/12m1av9PY1X7S-cwd9y_8nepBPMtVju0C?usp=sharing).
 
 ## Comparison Code ##
-We also includ the LLMDP class code for `DP-BART` and `DP-Prompt`, as used in the paper.
+We also include the LLMDP class code for `DP-BART` and `DP-Prompt`, as used in the paper.
 
 `X = LLMDP.DPPrompt()` or `X = LLMDP.DPBart()`
 
