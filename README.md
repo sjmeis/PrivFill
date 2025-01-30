@@ -1,6 +1,6 @@
 # PrivFill
 
-Anonymous repository containing software for the NAACL 2025 ARR submission: *On the Impact of Noise in Differentially Private Text Rewriting*
+Repository containing software for the NAACL 2025 paper: *On the Impact of Noise in Differentially Private Text Rewriting*
 
 ## Basic Usage ## 
 `X = PrivFill.PrivFill(model_checkpoint="/path/to/infilling_model")` OR `X = PrivFill.PrivFillDP(model_checkpoint="/path/to/infilling_model")`

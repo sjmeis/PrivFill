@@ -1,7 +1,7 @@
+mpmath
 nltk
 numpy
 pandas
-peft
 torch
 tqdm
 transformers
