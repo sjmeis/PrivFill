@@ -8,7 +8,7 @@
 
 </div>
 
-`privfill` is a Python package providing LLM-based local Differential Privacy (DP) mechanisms for text privatization via sentece infilling. It offers easy-to-use wrappers for fine-tuned Hugging Face models.
+`PrivFill` is a Python package providing LLM-based local Differential Privacy (DP) mechanisms for text privatization via sentece infilling. It offers easy-to-use wrappers for fine-tuned Hugging Face models.
 This software was originally presented in the NAACL 2025 findings paper: *On the Impact of Noise in Differentially Private Text Rewriting*
 
 ## Installation
@@ -55,10 +55,8 @@ private_text = engine.privatize(text)
 | SupportedModels.FLAN_T5_LARGE | sjmeis/flan-t5-large-infill-combined | DP-Prompt       |
 | SupportedModels.BART_LARGE    | sjmeis/bart-large-infill-combined    | DP-BART |
 
-## Models ##
-We make our three sentence infilling models public. They can be found at this [link](https://drive.google.com/drive/folders/12m1av9PY1X7S-cwd9y_8nepBPMtVju0C?usp=sharing).
 
-## Comparison Code ##
+## Comparison Code
 We also include the LLMDP class code for `DP-BART` and `DP-Prompt`, as used in the paper.
 
 ```python
@@ -68,4 +66,28 @@ X = LLMDP.DPBart()
 
 # then
 X.privatize(text, epsilon)
+```
+
+## Citation
+If you use or extend `PrivFill`, please consider citing the original work:
+
+```
+@inproceedings{meisenbacher-etal-2025-impact,
+    title = "On the Impact of Noise in Differentially Private Text Rewriting",
+    author = "Meisenbacher, Stephen  and
+      Chevli, Maulik  and
+      Matthes, Florian",
+    editor = "Chiruzzo, Luis  and
+      Ritter, Alan  and
+      Wang, Lu",
+    booktitle = "Findings of the Association for Computational Linguistics: NAACL 2025",
+    month = apr,
+    year = "2025",
+    address = "Albuquerque, New Mexico",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.findings-naacl.32/",
+    doi = "10.18653/v1/2025.findings-naacl.32",
+    pages = "514--532",
+    ISBN = "979-8-89176-195-7"
+}
 ```
