@@ -8,7 +8,7 @@
 
 </div>
 
-`PrivFill` is a Python package providing LLM-based local Differential Privacy (DP) mechanisms for text privatization via sentece infilling. It offers easy-to-use wrappers for fine-tuned Hugging Face models.
+`PrivFill` is a Python package providing LLM-based local Differential Privacy (DP) mechanisms for text privatization via sentence infilling. It offers easy-to-use wrappers for fine-tuned Hugging Face models.
 This software was originally presented in the NAACL 2025 findings paper: *On the Impact of Noise in Differentially Private Text Rewriting*
 
 ## Installation
@@ -69,6 +69,8 @@ X.privatize(text, epsilon)
 ```
 
 ## Citation
+We also include the data files and other code used to prepare the paper, found in `data`.
+
 If you use or extend `PrivFill`, please consider citing the original work:
 
 ```
