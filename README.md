@@ -34,7 +34,7 @@ import privfill
 # Choose between FLAN_T5_BASE, FLAN_T5_LARGE, and BART_LARGE
 engine = privfill.load_pipeline(privfill.SupportedModels.FLAN_T5_BASE, DP=True)
 
-text = "This is a long private document ... which contains sensitive information and should be privatized,"
+text = "This is a long private document ... which contains sensitive information and should be privatized."
 private_text = engine.privatize(text, epsilon=10)
 
 print(private_text)
