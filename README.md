@@ -51,9 +51,9 @@ private_text = engine.privatize(text)
 
 | Enum                 | Hugging Face Repository              | Base Mechanism               |
 |-------------------------------|--------------------------------------|-------------------------|
-| SupportedModels.FLAN_T5_BASE  | sjmeis/flan-t5-base-infill-combined  | DP-Prompt   |
-| SupportedModels.FLAN_T5_LARGE | sjmeis/flan-t5-large-infill-combined | DP-Prompt       |
-| SupportedModels.BART_LARGE    | sjmeis/bart-large-infill-combined    | DP-BART |
+| `SupportedModels.FLAN_T5_BASE`  | `sjmeis/flan-t5-base-infill-combined`  | DP-Prompt   |
+| `SupportedModels.FLAN_T5_LARGE` | `sjmeis/flan-t5-large-infill-combined` | DP-Prompt       |
+| `SupportedModels.BART_LARGE`    | `sjmeis/bart-large-infill-combined`    | DP-BART |
 
 
 ## Comparison Code
